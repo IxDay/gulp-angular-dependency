@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/IxDay/gulp-angular-dependency/issues"
   },
-  "homepage": "https://github.com/IxDay/gulp-angular-dependency"
+  "homepage": "https://github.com/IxDay/gulp-angular-dependency",
+  "devDependencies": {
+    "mocha": "^1.21.4"
+  }
 }
