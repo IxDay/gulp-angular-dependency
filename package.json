@@ -1,0 +1,25 @@
+{
+  "name": "gulp-angular-dependency",
+  "version": "0.0.0",
+  "description": "A gulp plugin which will retrieve files needed by angular modules through your filesystem",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/IxDay/gulp-angular-dependency"
+  },
+  "keywords": [
+    "gulplugin",
+    "angular",
+    "dependency",
+    "modules"
+  ],
+  "author": "Maxime Vidori",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/IxDay/gulp-angular-dependency/issues"
+  },
+  "homepage": "https://github.com/IxDay/gulp-angular-dependency"
+}
