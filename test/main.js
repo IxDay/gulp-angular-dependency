@@ -23,7 +23,8 @@ describe('gulp-angular-dependency', function () {
         assert.deepEqual(files, [
           'test_case/test_case_1/file_0_2.js',
           'test_case/test_case_1/file_0_1.js',
-          'test_case/test_case_1/file_0_3.js']);
+          'test_case/test_case_1/file_0_3.js',
+          'test_case/test_case_1/file_0_5.js']);
         done();
       }));
   });
@@ -38,7 +39,8 @@ describe('gulp-angular-dependency', function () {
         assert.deepEqual(files, [
           'test_case/test_case_1/file_0_2.js',
           'test_case/test_case_1/file_0_1.js',
-          'test_case/test_case_1/file_0_3.js']);
+          'test_case/test_case_1/file_0_3.js',
+          'test_case/test_case_1/file_0_5.js']);
         done();
       }));
   });
