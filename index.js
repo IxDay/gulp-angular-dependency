@@ -1,47 +1,48 @@
-// through2 is a thin wrapper around node transform streams
-var through = require('through2');
-var gutil = require('gulp-util');
+var through     = require('through2');
+var gutil       = require('gulp-util');
+var _           = require('lodash');
 var PluginError = gutil.PluginError;
 
-// consts
-const PLUGIN_NAME = 'gulp-prefixer';
+var angularModulesFactory =
+  new (require('angular-dependency/lib')).AngularModulesFactory();
 
-function prefixStream(prefixText) {
-  var stream = through();
-  stream.write(prefixText);
-  return stream;
-}
+// consts
+const PLUGIN_NAME = 'gulp-angular-dependency';
 
 // plugin level function (dealing with files)
-function gulpPrefixer(prefixText) {
-  if (!prefixText) {
-    throw new PluginError(PLUGIN_NAME, 'Missing prefix text!');
-  }
+function gulpAngularDependency (modules) {
 
-  prefixText = new Buffer(prefixText); // allocate ahead of time
+  var files = {};
+  modules = modules || [];
+  if (typeof modules === 'string') { modules = [modules]; }
 
   // creating a stream through which each file will pass
-  var stream = through.obj(function(file, enc, cb) {
-    if (file.isNull()) {
-       // do nothing if no contents
+  // returning the file stream
+  return through.obj(function (chunk, enc, cb) {
+    if (chunk.isNull()) {
+      // do nothing if no contents
     }
 
-    if (file.isBuffer()) {
-        file.contents = Buffer.concat([prefixText, file.contents]);
-    }
-
-    if (file.isStream()) {
-        file.contents = file.contents.pipe(prefixStream(prefixText));
-    }
-
-    this.push(file);
+    angularModulesFactory.processFile(chunk.contents.toString(), chunk.path);
+    files[chunk.path] = chunk;
 
     return cb();
-  });
+  }, function (cb) {
+    var topology = angularModulesFactory.getAngularModules();
+    var that = this;
 
-  // returning the file stream
-  return stream;
-};
+    _.each(modules, function (module) {
+      _.each(topology.resolve(module, true), function (module) {
+        that.push(files[module.defined]);
+
+        _.each(module.contents, function (path) {
+          that.push(files[path]);
+        });
+      });
+    });
+    cb();
+  });
+}
 
 // exporting the plugin main function
-module.exports = gulpPrefixer;
+module.exports = gulpAngularDependency;

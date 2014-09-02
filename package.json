@@ -23,11 +23,14 @@
   },
   "homepage": "https://github.com/IxDay/gulp-angular-dependency",
   "devDependencies": {
-    "mocha": "^1.21.4"
+    "mocha": "^1.21.4",
+    "vinyl-fs": "^0.3.7"
   },
   "dependencies": {
+    "angular-dependency": "^0.1.2",
     "gulp": "^3.8.7",
     "gulp-util": "^3.0.0",
+    "lodash": "^2.4.1",
     "through2": "^0.6.1"
   }
 }
