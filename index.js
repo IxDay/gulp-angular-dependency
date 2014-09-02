@@ -29,14 +29,24 @@ function gulpAngularDependency (modules) {
       // do nothing if no contents
     }
 
-    angularModulesFactory.processFile(chunk.contents.toString(), chunk.path);
+    if (chunk.isBuffer()) {
+      angularModulesFactory.processFile(chunk.contents.toString(), chunk.path);
+      cb();
+    }
+    if (chunk.isStream()) {
+      chunk.contents = chunk.contents.pipe(through.obj(function (content, enc, done) {
+        angularModulesFactory.processFile(content.toString(), chunk.path);
+        done();
+      }, function () {
+        cb();
+      }));
+    }
+
     files[chunk.path] = chunk;
 
-    return cb();
   }, function (cb) {
     var topology = angularModulesFactory.getAngularModules();
     var that = this;
-
     if (modules) {
       _.each(modules, function (module) {
         _.each(topology.resolve(module, true), function (module) {
