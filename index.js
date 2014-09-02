@@ -42,7 +42,7 @@ function gulpAngularDependency (modules) {
   }, function (cb) {
     var topology = angularModulesFactory.getAngularModules();
     var that = this;
-    if (modules) {
+    if (modules && modules.length) {
       _.each(modules, function (module) {
         _.each(topology.resolve(module, true), function (module) {
           addToStream(that, module);

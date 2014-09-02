@@ -62,17 +62,26 @@ describe('gulp-angular-dependency', function () {
 
   it('should pass all files containing angular code if no module is defined',
     function (done) {
-      vfs.src('test/test_case/test_case_3/*')
-      .pipe(angularDependency())
-      .pipe(through.obj(function (chunk, enc, cb) {
+      var checking = through.obj(function (chunk, enc, cb) {
         files.push(path.relative(__dirname, chunk.path));
+        this.push(chunk);
         cb();
-      }, function () {
+      }, function (cb) {
         assert.deepEqual(files, [
           'test_case/test_case_3/file_0_1.js',
           'test_case/test_case_3/file_0_3.js',
           'test_case/test_case_3/file_0_2.js']);
-        done();
-      }));
-  });
+        cb();
+      });
+
+      vfs.src('test/test_case/test_case_3/*')
+        .pipe(angularDependency())
+        .pipe(checking)
+        .pipe(angularDependency([]))
+        .pipe(checking)
+        .pipe((function () {
+          done();
+          return through();
+        })())
+    });
 });
