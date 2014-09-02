@@ -1,13 +1,8 @@
 var through     = require('through2');
-var gutil       = require('gulp-util');
 var _           = require('lodash');
-var PluginError = gutil.PluginError;
 
 var angularModulesFactory =
   new (require('angular-dependency/lib')).AngularModulesFactory();
-
-// consts
-const PLUGIN_NAME = 'gulp-angular-dependency';
 
 // plugin level function (dealing with files)
 function gulpAngularDependency (modules) {
