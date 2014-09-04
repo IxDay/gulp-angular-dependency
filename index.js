@@ -1,16 +1,21 @@
-var through     = require('through2');
+var es          = require('event-stream');
 var _           = require('lodash');
+var gutil       = require('gulp-util');
+var PluginError = gutil.PluginError;
 
 var angularModulesFactory =
   new (require('angular-dependency/lib')).AngularModulesFactory();
+
+// consts
+const PLUGIN_NAME = 'gulp-angular-dependency';
 
 // plugin level function (dealing with files)
 function gulpAngularDependency (modules) {
 
   function addToStream (stream, module) {
-    stream.push(files[module.defined]);
+    stream.emit('data', files[module.defined]);
     _.each(module.contents, function (path) {
-      stream.push(files[path]);
+      stream.emit('data', files[path]);
     });
   }
 
@@ -19,27 +24,22 @@ function gulpAngularDependency (modules) {
 
   // creating a stream through which each file will pass
   // returning the file stream
-  return through.obj(function (chunk, enc, cb) {
+  return es.through(function (chunk) {
     if (chunk.isNull()) {
       // do nothing if no contents
     }
 
     if (chunk.isBuffer()) {
       angularModulesFactory.processFile(chunk.contents.toString(), chunk.path);
-      cb();
     }
     if (chunk.isStream()) {
-      chunk.contents = chunk.contents.pipe(through.obj(function (content, enc, done) {
-        angularModulesFactory.processFile(content.toString(), chunk.path);
-        done();
-      }, function () {
-        cb();
-      }));
+      return this.emit('error',
+        new PluginError(PLUGIN_NAME,  'Streaming not supported'));
     }
 
     files[chunk.path] = chunk;
 
-  }, function (cb) {
+  }, function () {
     var topology = angularModulesFactory.getAngularModules();
     var that = this;
     if (modules && modules.length) {
@@ -53,7 +53,7 @@ function gulpAngularDependency (modules) {
         addToStream(that, module);
       });
     }
-    cb();
+    this.emit('end');
   });
 }
 
