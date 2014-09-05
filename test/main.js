@@ -43,6 +43,41 @@ describe('gulp-angular-dependency', function () {
       }));
   });
 
+  it('should provide a restore function which will reinject the files ' +
+    'filtered out', function (done) {
+    var angularFilter = angularDependency('module1');
+    var restoredFiles = [];
+
+    vfs.src('test/test_case/test_case_3/*')
+      .pipe(angularFilter)
+      .pipe(es.through(
+        function (chunk) {
+          files.push(path.relative(__dirname, chunk.path));
+          this.emit('data', chunk);
+        },
+        function () {
+          assert.deepEqual(files, [
+            'test_case/test_case_3/file_0_1.js',
+            'test_case/test_case_3/file_0_3.js']);
+          this.emit('end');
+        }))
+      .pipe(angularFilter.restore())
+      .pipe(es.through(
+        function (chunk) {
+          restoredFiles.push(path.relative(__dirname, chunk.path));
+          this.emit('data', chunk);
+        },
+        function () {
+          assert.deepEqual(restoredFiles, [
+            'test_case/test_case_3/file_0_1.js',
+            'test_case/test_case_3/file_0_3.js',
+            'test_case/test_case_3/file_0_2.js',
+            'test_case/test_case_3/file_0_4.js']);
+          done();
+        }));
+  });
+
+
   it('should pass all files containing angular code if no module is defined',
     function (done) {
       var checking = es.through(function (chunk) {
@@ -55,15 +90,15 @@ describe('gulp-angular-dependency', function () {
           'test_case/test_case_3/file_0_2.js']);
         this.emit('end');
       });
-
+      var angularFilter = angularDependency();
       vfs.src('test/test_case/test_case_3/*')
-        .pipe(angularDependency())
+        .pipe(angularFilter)
         .pipe(checking)
+        .pipe(angularFilter.restore())
         .pipe(angularDependency([]))
         .pipe(checking)
-        .pipe((function () {
+        .pipe(es.wait(function () {
           done();
-          return es.through();
-        })())
+        }))
     });
 });
