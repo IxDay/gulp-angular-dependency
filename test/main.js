@@ -101,4 +101,19 @@ describe('gulp-angular-dependency', function () {
           done();
         }))
     });
+
+  it('should filter files which contains the needed module and its ' +
+    'dependencies excluding exclusions', function (done) {
+    vfs.src('test/test_case/test_case_1/*')
+      .pipe(angularDependency('module1', 'module2'))
+      .pipe(es.through(function (chunk) {
+        files.push(path.relative(__dirname, chunk.path));
+      }, function () {
+        assert.deepEqual(files, [
+          'test_case/test_case_1/file_0_1.js',
+          'test_case/test_case_1/file_0_3.js',
+          'test_case/test_case_1/file_0_5.js']);
+        done();
+      }));
+  });
 });

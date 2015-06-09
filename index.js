@@ -7,7 +7,7 @@ var PluginError = gutil.PluginError;
 const PLUGIN_NAME = 'gulp-angular-dependency';
 
 // plugin level function (dealing with files)
-function gulpAngularDependency (modules) {
+function gulpAngularDependency (modules, exclude) {
   var restoreStream = es.through();
   var angularModulesFactory =
       new (require('angular-dependency/lib')).AngularModulesFactory();
@@ -51,7 +51,7 @@ function gulpAngularDependency (modules) {
     var that = this;
     if (modules && modules.length) {
       _.each(modules, function (module) {
-        _.each(topology.resolve(module, true), function (module) {
+        _.each(topology.resolve(module, true, exclude), function (module) {
           addToStream(that, module);
         });
       });
