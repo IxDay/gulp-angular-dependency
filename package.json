@@ -1,6 +1,6 @@
 {
   "name": "gulp-angular-dependency",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "A gulp plugin which will retrieve files needed by angular modules through your filesystem",
   "main": "index.js",
   "scripts": {
